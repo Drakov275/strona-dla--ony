@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dla Mojej Basi - Wesołych Świąt!</title>
+    <style>
+         body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+            scroll-behavior: smooth;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .modal-content {
+            text-align: center;
+            color: white;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .modal-btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .yes-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .no-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        header {
+            background-color: #222;
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .love-test {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .love-test h2 {
+            margin-top: 0;
+            color: #222;
+        }
+
+        .love-meter {
+            width: 100%;
+            height: 30px;
+            background-color: #eee;
+            border-radius: 15px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .love-meter-fill {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #ff6b6b, #ff8e8e);
+            transition: width 1s;
+        }
+
+        .love-result {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .cat-gif {
+            text-align: center;
+            margin: 40px 0;
+            cursor: pointer;
+        }
+
+        .cat-gif img {
+            max-width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .cat-gif img:hover {
+            transform: scale(1.05);
+        }
+
+        .click-me {
+            font-style: italic;
+            color: #777;
+            margin-top: 10px;
+        }
+
+        .love-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .love-message h2 {
+            color: white;
+            font-size: 5em;
+            text-align: center;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .gallery-item {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .gallery-caption {
+            padding: 15px;
+            text-align: center;
+            background-color: #fff;
+            font-size: 0.9em;
+            height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        /* Modal z powiększonym zdjęciem */
+        .photo-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .photo-modal-content {
+            display: flex;
+            max-width: 90%;
+            max-height: 90%;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .photo-modal-img {
+            max-height: 80vh;
+            max-width: 70%;
+            object-fit: contain;
+        }
+
+        .photo-modal-description {
+            padding: 30px;
+            max-width: 30%;
+            color: white;
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+            max-height: 80vh;
+            font-size: 1.5em;
+            line-height: 1.6; 
+        }
+
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: #ff6b6b;
+        }
+
+        footer {
+            background-color: #222;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 60px;
+        }
+
+        .heart {
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Modal pytający o zostanie rządem -->
+    <div class="modal" id="governmentModal">
+        <div class="modal-content">
+            <h2>Basiu, zostaniesz mojom rzonom?</h2>
+            <div class="modal-buttons">
+                <button class="modal-btn yes-btn" id="yesBtn">TAK</button>
+                <button class="modal-btn no-btn" id="noBtn">NIE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Komunikat KOCHAM CIĘ -->
+    <div class="love-message" id="loveMessage">
+        <h2>KOCHAM CIĘ BASIA(MWAAAH)!!!!</h2>
+    </div>
+
+    <!-- Modal z powiększonym zdjęciem -->
+    <div class="photo-modal" id="photoModal">
+        <span class="close-modal" id="closeModal">&times;</span>
+        <div class="photo-modal-content">
+            <img src="" alt="Powiększone zdjęcie" class="photo-modal-img" id="modalImage">
+            <div class="photo-modal-description" id="modalDescription">
+                <!-- Tutaj będzie pełny opis -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Nagłówek -->
+    <header>
+        <h1>Dla Mojej Ukochanej Basi</h1>
+        <p>Wesołych Świąt Wielkanocnych!</p>
+    </header>
+
+    <!-- Główna zawartość -->
+    <div class="container">
+        <!-- Ankieta "Czy mnie kocha" -->
+        <section class="love-test">
+            <h2>Czy Michał Cię kocha?</h2>
+            <p>Kliknij przycisk, aby sprawdzić prawdę!</p>
+            <button id="checkLoveBtn" style="padding: 10px 20px; background-color: #222; color: white; border: none; border-radius: 5px; cursor: pointer;">Sprawdź</button>
+            
+            <div class="love-meter">
+                <div class="love-meter-fill" id="loveMeter"></div>
+            </div>
+            
+            <div class="love-result" id="loveResult">
+                Michał kocha Cię na 100%! ❤️
+            </div>
+        </section>
+
+        <!-- Kot GIF -->
+        <section class="cat-gif" id="catGif">
+            <img src="https://tenor.com/pl/view/blegh-gif-27087748.gif" alt="Uroczy kotek">
+            <p class="click-me">Kliknij mnie!</p>
+        </section>
+
+        <!-- Galeria zdjęć -->
+        <section>
+            <h2 style="text-align: center; margin-bottom: 20px;">Nasze Wspólne Chwile</h2>
+            <div class="gallery">
+                <!-- Miejsce na 12 zdjęć -->
+                <div class="gallery-item" onclick="openModal('IMG20250313222326.jpg', 'Drugie spotkanie przed zwiazkiem, pamietam jak dziś. Po pierwszym udanym spotkaniu, w czwartek spotkaliśym się na dokończenie ogladania trylogii Przez moje okno. Smialiśmy się  cringeu i aseksualności który to powoduje. Mało wiedzielismy ale te rzeczy uznanze za żałosne, zaczniemy robić sami ale wtedy jeszcze tego nie wiemy')">
+                    <img src="IMG20250313222326.jpg" alt="Nasze zdjęcie" class="gallery-img">
+                    <div class="gallery-caption">
+                        <p>Pierwszy raz malowanko </p>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openModal('Snapchat-1359499432.jpg', 'Niby niewinne a jednak ważne zdjęcie, ponieważ to nasze pierwsze wspólne!!! Basia nie lubi jak ktoś jej robi zdjęcia więc musiałem ją troche zmusić ale na całe szczeście się udało. Pamietam jak dziś, niby było ciepło byłem w samej bluzie a jak dało po kosciach to trzęśliśmy się idąc na koniec do aury')">
+                    <img src="Snapchat-1359499432.jpg" alt="Nasze zdjęcie" class="gallery-img">
+                    <div class="gallery-caption">
+                        <p>Pierwsze wspólne zdjęcie</p>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openModal('IMG_20250330_222728_093.jpg', 'A to zdjęcie przypadło mi w pamięci, wtedy Basia jeszcze przed zwiazkiem opowiadała hisotryjke o naziście, wtedy widziałem porownanie jej i obecnej baby tamtego gościa. Wtedy upewniłem się w przekonaniu że mam najpiękniejszą kobietę na ziemi.')">
+                    <img src="IMG_20250330_222728_093.jpg" alt="Nasze zdjęcie" class="gallery-img">
+                    <div class="gallery-caption">
+                        <p>Uroda mojej rzonki</p>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openModal('Snapchat-639844272.jpg', 'Zabrałem koc z bursy tylko po to by nam było ciepło, był wielki strach przed spadnięciem torebki do wody. Jeden z paru spotów które wybieraliśmy kiedy bursa nie była wolna.')">
+                    <img src="Snapchat-639844272.jpg" alt="Nasze zdjęcie" class="gallery-img">
+                    <div class="gallery-caption">
+                        <p>WSPÓLNE ZDJĘCIE SEQUEL</p>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openModal('IMG20250328115932.jpg', 'Po moich dniach otwartych urwałem się po to by przyjechać na długą przerwe Basia wtedy pokazała mi super miejsce nad torami gdzie moglismy zapalić i odpocząć. Potem wpadliśmy na plan że w sumie śmiesznie będzie jak pójdę z nią na WF. W zamyśle było że jestem losowym przechodniem albo jej starszym brate. Mogło nas zdradzić to że trzymaliśmy się za ręce. Na sam koniec spaceru wyczaiła mnie jej nauczycielka, na całe szczęscie obeszło się bez krzyku. Wykorzystam każdą chwilę bym móc z nią spedzić czas.')">
+                    <img src="IMG20250328115932.jpg" alt="Nasze zdjęcie" class="gallery-img">
+                    <div class="gallery-caption">
+                        <p>Pierwsza wspólna długa przerwa</p>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openModal('image0000001.jpg', 'Wracałem do domu, Basia poszła wtedy z Babcią na zakupy, dostałem 2 foto odnośnie wyboru swetra, wtedy poczułem się ważny i że moja opinia ma znaczenie, na dodatek miałem wpływ na kupno i to co na siebie założy. Pamietam wtedy kupiła też obcasy, powiedziała że jak je zobacze to się spuszczę.')">
+                    <img src="image0000001.jpg" alt="Nasze zdjęcie" class="gallery-img">
+                    <div class="gallery-caption">
+                        <p>Pamiętny moment tego szukania opinii w ubraniach</p>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openModal('IMG_20250330_113430_531.jpg', 'Powiedziałem jak przepiękne ma oczy i wtedy dostałem 3 zdjęcia wszystkie podobne ale zarazem wszytkie tak samo hipnotyzujące anielskim spojrzeniem, pamietam jak zatopiłem się w telefonie patrząc w głębie jej oczu. Wiedziałem już od dawna że to jedyne oczy które chcę oglądać, ale tamta chwila pozwoliła mi podziwiać to nawet na odległość między nami.')">
+                    <img src="IMG_20250330_113430_531.jpg" alt="Nasze zdjęcie" class="gallery-img">
+                    <div class="gallery-caption">
+                        <p>Wzrok który jest warty miliony ludzkich dusz</p>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openModal('Screenshot_2025-04-20-01-00-47-73_50ef9f5a0f3fc24b6f0ffc8843167fe4.jpg', 'Spontaniczny pomysł wyszedł w czwartek a już w sobotę został zrealizowany, po zarezerwowaniu miejsca dogadałem jeszcze by postawili świeczkę dla odrobiny romantyzmu. Zarazem to pierwszy raz kiedy Basia była moją passanger Princess. Jej wygląd tamtego dnia wypalił mi się w mózgu, w pozytywnym tego określenia znaczeniu. Jej czarne włosy z granatowym połyskiem, niebieska szminka(została stracona przed wejsciem do restauracji), niebieski makijaż nad oczami, to wszystko kontrastowała moja bluza i szara kratkowana spodniczka. Nie zapomnę tamtego dnia nigdy.')">
+                    <img src="Screenshot_2025-04-20-01-00-47-73_50ef9f5a0f3fc24b6f0ffc8843167fe4.jpg" alt="Nasze zdjęcie" class="gallery-img">
+                    <div class="gallery-caption">
+                        <p>PIERWSZA RANDKA</p>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openModal('Snapchat-1153351.jpg', 'A oto moja żonka, abstrakcyjnie piękna, nie jest to zwykła uroda, jest to coś co ciężko opisać słowami. To nie jest jak obraz Jana Matejki pokazujący chwilę i rzeczywsitą sytuacje a bardziej Gwieździsta Noc Van Gogha, nie wygląda jak piękny dzień, wyglada jak najciemniejsza gwieździsta noc z księzycem pełnym jak moje serce uczuciami do niej. Jej urodę się czuje, moje serce przyśpiesza za każdym razem kiedy ją widzę, oczy rosną jak u narkomana, neurony wariują, ręcę pocą się, a ciało czuje spięcie. Po chwili tych uczuć przechodzi mnie myśl satysfakcji, że to jest moja dziewczyna, jedyna, moja na wyłącznośc, istota niebiańska, która nie urodziła się a powstała stworzona przez niewyjśmientsze bóstwa w całym kosmosie. Moja mała astralna istota. ')">
+                    <img src="Snapchat-1153351.jpg" alt="Nasze zdjęcie" class="gallery-img">
+                    <div class="gallery-caption">
+                        <p>A to moja kobieta</p>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openModal('Snapchat-1717127089.jpg', 'Te zdjęcie, wzbudziło we mnie ciarki ale takie pozytywne, a krew zaczeła się pompować nie w to miejsce co trzeba ( kurwa gdyby pierwszy raz), paznokcie zrobione ostre jak szpony a na dodatek z pierwszą literą mojego imienia na kciuku !!!!!  ')">
+                    <img src="Snapchat-1717127089.jpg" alt="Nasze zdjęcie" class="gallery-img">
+                    <div class="gallery-caption">
+                        <p>Wampirzyca</p>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openModal('52bc1b522e89a63f2ba97dd0e92cbbe8.jpg', 'Pewnego wieczoru uznałem a chuj spojrze na yubo, znalazłem tam dziewczynę, przykuła moją uwagę swoją nadnaturalną urodą. Postanowiłem napisać Czy panienka zagrałby w jakas gierke, odpisała i wymienilismy się swoimi preferancjami alkholi a potem discordami. Dobrze że szybko zareagowałem bo pozniej dostała bana. O godzinie 3 zaczeliśmy gadać był to dzien kobiet, byłem swięcie przekonany że ma 19 lat a pozniej okazało się że jednak 16 upsi. Gadaliśmy tak do 7:30. Rozmawialiśmy o wszystkim, potem zaczeły się słynne pytania ze stron do gry w butelkę, porozmawialismy o naszych preferenjach a wtedy powiedziałęm ze siegne max po rocznik 06-07 (Wtedy jeszcze nie wiedziałem). Poszliśmy spać, nastepnego dnia popisalismy chwilkę, potem robiła paznokcie czarne takie długie szpony pokazała mi je a pierwsza myśl to Jezu ile bym dał zeby mnie to podrapało. Tego tygodnia w środę spotkalimsy sie poraz pierwszy, pojechalismy do mojej bursy i zaczelismy ogladac Przez moje okno. Tandente romansidło ale naciskała, podobało mi sie ale nie film tylko chwile wspolnie spedzone. Powtórzylismy to w czwartek. Od tamtego momentu pisaliśmy do siebie jak najęci, NA WSZYTKIE TEMATY zycie smierc chlopaki dziewczyny seks dragi WSZYSTKO. Następnego tygodnia spotkaliśmy się i poszliśmy na schodki w centralu. Pogdaliśmy powygłupialiśmy się, miło spędzilismy czas. Chciałem ją wtedy pierwszy raz objąć ale zabrakło odwagi. Spotkaliśmy się również w czwartek i zabrałem ją nad jezioro miejskie, gdzie poleżeliśmy w słońcu, bawiliśmy się a potem zagraliśmy w czułko, wtedy pierwszy raz poszła ze mna jak chciałem się odlać stała na czatach. Po miło spędzonym dniu, już wtedy znałem swój cel, żeby została moją dziewczyną. Probowałem to jakos wkrecic w zdania jak pisalismy, wtedy napisala ze jak bede bardzo zdesperowany to zostanie moja kurą domową. Wtedy juz wiedziałem ze jestem na dobrej drodze. Ku mojemu szczęsciu i mam nadzieje ze jej, spotkalismy sie w nastepny poniedziałek, poszliśym na kawę a potem na mały spacer pod zamek Kopernika, wtedy pierwszy raz (podłozyła mi moja reke pod jej głowe ) objąłem ją, czułem że to to. Leżeliśmy na trawie, zimna byla jak cholera ale ciepło jej ciała sprawiało że nie chcę wstawać. Kiedy się zciemniło, usiadła mi na kolanach, zblizyła się do mnie i przez dobre 20min patrzyliśmy się na siebie oko w oko. Ewidentnie znudziło ją czekanie i dała mi jasny znak. Wtedy pierwszy raz się pocałowaliśmy, zaczeliśmy od buziaka a potem zaczeliśmy się całować. Przebiegło przez moj organizm tyle eufroii ze nie chciałem zeby tamten moment ustał. Niestety niedługo po tym musieliśmy isc na przystanek, moj autobus był szybszy i go goniłem, rozbiegłem się do niego a on podjechał kawałek dalej, by do niego wsiasc musiałem ją minąć. Wtedy przebiegając pocałowałem ją, niczym scena z filmu. Do dziś raz w czas sie o tym wspomni. Tego samego tygodnia, spotkaliśmy się w środę i czwartek, we wtorek leżelismy na kocu przy miejkiej tuliliśmy się i całowalismy na zmiane z oglądaniem Big Mouth, następnego dnia chociaż o tym nie wiedziałem nastał ten dzień 27 marca 2025, w bursie kolega pojechal do domu, spedzilismy oglądając. Po chwili powiedziała ze jest gotowa, wtedy zapytałem ją o związek, skakała ze szczęscia, po łózku po podłodze wszędzie. Po chwili namysłu, spojrzałem się w jej oczy, pierwszy raz słowa kocham Cię nie miały aż tyle wagi. Wtedy zająkałem się prawie, nie mogłem z siebie tego wydusić, serce wiedziało że chce. Reszta to historia, od tamtego momentu jest moją nacudowniejszą dziewczyną jaką mogłem sobie wymarzyć, tak cudowna dziewczyna nie powinna być realna a jednak jest. NA DODATEK JEST MOJA !!! KOCHAM CIĘ BASIA <3')">
+                    <img src="52bc1b522e89a63f2ba97dd0e92cbbe8.jpg" alt="Nasze zdjęcie" class="gallery-img">
+                    <div class="gallery-caption">
+                        <p>Nasza historia</p>
+                    </div>
+                </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sekcja z życzeniami -->
+        <section style="text-align: center; margin: 60px 0;">
+            <h2>Dla Ciebie, Basiu</h2>
+            <p style="max-width: 800px; margin: 0 auto; line-height: 1.6; font-size: 1.1em;">
+                Kochana Basiu, w te Święta Wielkanocne chcę Ci powiedzieć, jak bardzo jesteś dla mnie ważna.<br>
+                Nie wyobrażam sobie życia bez Ciebie i każdego dnia dziękuję losowi, że Cię spotkałem.<br>
+                Dziękuję za Twoją miłość, wsparcie i za to, że jesteś. Kocham Cię ponad wszystko!<br>
+                <span style="font-size: 10em; display: block; margin-top: 20px;">🖤</span>
+            </p>
+        </section>
+    </div>
+
+    <!-- Stopka -->
+    <footer>
+        <p>Strona stworzona z miłością dla Basi <span class="heart">❤</span> MWAH</p>
+    </footer>
+
+    <script>
+        // Modal pytający o zostanie rządem
+        document.addEventListener('DOMContentLoaded', function() {
+            const governmentModal = document.getElementById('governmentModal');
+            const yesBtn = document.getElementById('yesBtn');
+            const noBtn = document.getElementById('noBtn');
+            
+            // Pokaz modal przy pierwszym wejściu
+            governmentModal.style.display = 'flex';
+            
+            let noBtnClicks = 0;
+            
+            noBtn.addEventListener('click', function() {
+                noBtnClicks++;
+                
+                if (noBtnClicks < 5) {
+                    // Zwiększ rozmiar przycisku TAK
+                    const currentSize = parseInt(window.getComputedStyle(yesBtn).fontSize);
+                    yesBtn.style.fontSize = (currentSize + 5) + 'px';
+                    
+                    // Zmniejsz przycisk NIE
+                    noBtn.style.opacity = 1 - (noBtnClicks * 0.2);
+                } else {
+                    // Po 5 kliknięciach usuń przycisk NIE
+                    noBtn.remove();
+                    
+                    // Powiększ przycisk TAK na cały ekran
+                    yesBtn.style.fontSize = '5em';
+                    yesBtn.style.width = '100%';
+                    yesBtn.style.height = '100%';
+                    yesBtn.style.borderRadius = '0';
+                    yesBtn.style.position = 'fixed';
+                    yesBtn.style.top = '0';
+                    yesBtn.style.left = '0';
+                }
+            });
+            
+            yesBtn.addEventListener('click', function() {
+                governmentModal.style.display = 'none';
+            });
+            
+            // Ankieta "Czy mnie kocha"
+            const checkLoveBtn = document.getElementById('checkLoveBtn');
+            const loveMeter = document.getElementById('loveMeter');
+            const loveResult = document.getElementById('loveResult');
+            
+            checkLoveBtn.addEventListener('click', function() {
+                loveMeter.style.width = '100%';
+                setTimeout(() => {
+                    loveResult.style.display = 'block';
+                }, 1000);
+            });
+            
+            // Kot GIF z komunikatem KOCHAM CIĘ
+            const catGif = document.getElementById('catGif');
+            const loveMessage = document.getElementById('loveMessage');
+            
+            catGif.addEventListener('click', function() {
+                loveMessage.style.display = 'flex';
+                setTimeout(() => {
+                    loveMessage.style.display = 'none';
+                }, 3000);
+            });
+
+            // Zamknij modal ze zdjęciem
+            const closeModal = document.getElementById('closeModal');
+            closeModal.addEventListener('click', function() {
+                document.getElementById('photoModal').style.display = 'none';
+            });
+        });
+
+        // Funkcja otwierająca modal ze zdjęciem
+        function openModal(imgSrc, description) {
+            const modal = document.getElementById('photoModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalDesc = document.getElementById('modalDescription');
+            
+            modalImg.src = imgSrc;
+            modalDesc.innerHTML = description;
+            modal.style.display = 'flex';
+            
+            // Zamknij modal po kliknięciu w tło
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
